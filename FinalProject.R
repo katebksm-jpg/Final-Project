@@ -58,3 +58,8 @@ ggplot(dc_predominant_race)+
        fill="Race")+
   theme_void()
 
+#load Heat Sensitivity Exposure Index
+Heat_Sens_Index <- read.csv("/cloud/project/Heat_Sensitivity-Exposure_Index.csv")
+
+ggplot(data = Heat_Sens_Index, aes(fill = Heat_Sens_Index$HSEI)) + 
+  geom_sf()
