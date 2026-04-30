@@ -17,7 +17,7 @@ census_api_key("9fc7a703387fd39bcf6551fc8b47e7326f02417c", install = TRUE)
 
 dc_income <- get_acs(geography = "tract", variables = "B19013_001", #code for median income 
                      state = "DC", year=2019, geometry=TRUE)
-
+plot(dc_income)
 #make plot 
 
 ggplot(dc_income)+geom_sf(aes(fill=estimate), color="white", linewidth=0.2)+
@@ -59,7 +59,27 @@ ggplot(dc_predominant_race)+
   theme_void()
 
 #load Heat Sensitivity Exposure Index
-Heat_Sens_Index <- read.csv("/cloud/project/Heat_Sensitivity-Exposure_Index.csv")
+Heat_Sens_Index <- read.csv("Heat_Sensitivity-Exposure_Index.csv")
 
-ggplot(data = Heat_Sens_Index, aes(fill = Heat_Sens_Index$HSEI)) + 
-  geom_sf()
+unique(Heat_Sens_Index)
+
+DC_Heat_data <- rename(Heat_Sens_Index, GEOID = GEO_ID)
+DC_Heat_data$GEOID2 <- gsub("1400000US","",DC_Heat_data$GEOID)
+
+#join heat data to DC data
+DC_fulldata <- full_join(dc_income, # left table
+                         DC_Heat_data, # right table
+                         by=c("GEOID"="GEOID2")) # common identifier
+
+max(DC_fulldata$HEI)
+
+#plot the data
+ggplot(DC_fulldata)+
+  geom_sf(aes(fill = HEI))+
+  labs(title= "Heat Exposure Index",
+       subtitle = "Washington D.C.")+
+  theme_void()
+
+
+
+
